@@ -21,39 +21,33 @@ class GUI(xbmcgui.WindowXML):
     # Actions
     ACTION_CONTEXT_MENU = [117]
     ACTION_MENU = [122]
-    ACTION_PREVIOUS_MENU = [9]
+    ACTION_PREVIOUS_MENU = [9, 92, 10]
     ACTION_SHOW_INFO = [11]
-    ACTION_EXIT_SCRIPT = [10, 13]
+    ACTION_EXIT_SCRIPT = [13]
     ACTION_DOWN = [4]
     ACTION_UP = [3]
-    ACTION_0 = [58]
+    ACTION_0 = [58, 18]
+    ACTION_PLAY = [79]
 
     def __init__(self, xmlFilename, scriptPath, defaultSkin, defaultRes):
         self.getScraper()
 
     def getScraper(self):
         addon_path = xbmc.translatePath(Addon.getAddonInfo('path'))
-        print 'TBP: addon_path: %s' % repr(addon_path)
         res_path = os.path.join(addon_path, 'resources', 'lib')
-        print 'TBP: res_path: %s' % repr(res_path)
         scrapers_path = os.path.join(res_path, 'scrapers')
-        print 'TBP: scrapers_path: %s' % repr(scrapers_path)
         scrapers = [f[:-3] for f in os.listdir(scrapers_path) \
                     if f.endswith('.py')]
-        print 'TBP: scrapers: %s' % repr(scrapers)
         sys.path.insert(0, res_path)
         sys.path.insert(0, scrapers_path)
-        print 'TBP: path: %s' % repr(sys.path)
         imported_modules = [__import__(scraper) for scraper in scrapers]
-        print 'TBP: imported_modules: %s' % repr(imported_modules)
         self.SOURCES = [m.register() for m in imported_modules]
 
     def onInit(self):
         self.show_info = True
         self.active_source_id = 0
         aspect_ratio_id = int(getSetting('aspect_ratio2'))
-        aspect_ratios = ('scale', 'keep')
-        self.default_aspect = aspect_ratios[aspect_ratio_id]
+        self.default_aspect = ('scale', 'keep')[aspect_ratio_id]
         self.setSource()
         self.showAlbums()
         self.setFocus(self.getControl(self.CONTROL_MAIN_IMAGE))
@@ -86,6 +80,8 @@ class GUI(xbmcgui.WindowXML):
             self.showAlbums()
         elif action in self.ACTION_0:
             self.toggleAspect()
+        elif action in self.ACTION_PLAY:
+            pass
 
     def onClick(self, controlId):
         if controlId == self.CONTROL_MAIN_IMAGE:
